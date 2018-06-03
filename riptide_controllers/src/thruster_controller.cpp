@@ -451,7 +451,7 @@ void ThrusterController::DynamicReconfigCallback(riptide_controllers::VehiclePro
   volume = config.Volume;
   pos_buoyancy.x = config.Buoyancy_X_POS;
   pos_buoyancy.y = config.Buoyancy_Y_POS;
-  pos_buoyancy.z = config.Buoyancy_Y_POS;
+  pos_buoyancy.z = config.Buoyancy_Z_POS;
 
   weight = mass*GRAVITY;
   buoyancy = volume*WATER_DENSITY*GRAVITY;

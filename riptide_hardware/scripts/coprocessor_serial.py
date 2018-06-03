@@ -5,7 +5,8 @@ import rospy
 from std_msgs.msg import String, Header
 from riptide_msgs.msg import Depth
 from riptide_msgs.msg import PwmStamped
-from riptide_msgs.msg import SwitchState
+from riptide_msgs.msg import SwitchState, ElectroStat
+
 
 COM_PORT = '/dev/copro'
 ser = serial.Serial(COM_PORT, baudrate=9600, timeout=None)
@@ -37,6 +38,7 @@ def main():
     # Add publishers
     depthPub = rospy.Publisher('/state/depth_raw', Depth, queue_size=1) #publish raw for the depth processor
     swPub = rospy.Publisher('/state/switches', SwitchState, queue_size=1)
+    esPub = rospy.Publisher('state/electonics', ElectroStat, queue_size=1)
 
     #Subscribe to Thruster PWMs
     rospy.Subscriber("/command/pwm", PwmStamped, pwm_callback, queue_size=1)
@@ -46,6 +48,7 @@ def main():
     swRead = False
     depth_msg = Depth()
     sw_msg = SwitchState()
+    stat_msg = ElectroStat()
     rate = rospy.Rate(100)
     while not rospy.is_shutdown():
         if ser is not None:
@@ -62,7 +65,7 @@ def main():
                     depth_msg.depth = float(depthList[2].replace("\x00",""))
                     depth_msg.altitude = 0.0
                     depthPub.publish(depth_msg)
-                elif (data[1] == "$"):
+                if (data[1] == "$"):
                     # Populate switch message. Start at 1 to ignore line break
                     sw_msg.header.stamp = rospy.Time.now()
                     sw_msg.kill = True if packet[0] is '1' else False
@@ -72,6 +75,16 @@ def main():
                     sw_msg.sw4 = True if packet[4] is '1' else False
                     sw_msg.sw5 = True if packet[5] is '1' else False
                     swPub.publish(sw_msg)
+                elif (data[1] == "&"):
+                    # Populate the electronics status message`
+                    statusList = packet.split("!")
+                    stat_msg.header.stamp = rospy.Time.now()
+                    stat_msg.temp_balancer = float(statusList[0].replace("\x00",""))
+                    stat_msg.temp_converter = float(statusList[1].replace("\x00",""))
+                    stat_msg.stbd_voltage = float(statusList[2].replace("\x00",""))
+                    stat_msg.stbd_current = float(statusList[3].replace("\x00",""))
+                    stat_msg.port_voltage = float(statusList[4].replace("\x00",""))
+                    stat_msg.port_current = float(statusList[5].replace("\x00",""))
 
         rate.sleep()
 

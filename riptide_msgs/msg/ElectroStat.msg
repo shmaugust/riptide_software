@@ -1,7 +1,2 @@
 std_msgs/Header header
 float32 temp_balancer
-float32 temp_converter
-float32 stbd_voltage
-float32 stbd_current
-float32 port_voltage
-float32 port_current

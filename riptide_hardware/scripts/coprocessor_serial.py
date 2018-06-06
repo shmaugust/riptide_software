@@ -38,7 +38,7 @@ def main():
     # Add publishers
     depthPub = rospy.Publisher('/state/depth_raw', Depth, queue_size=1) #publish raw for the depth processor
     swPub = rospy.Publisher('/state/switches', SwitchState, queue_size=1)
-    esPub = rospy.Publisher('state/electonics', ElectroStat, queue_size=1)
+    esPub = rospy.Publisher('/state/electonics', ElectroStat, queue_size=1)
 
     #Subscribe to Thruster PWMs
     rospy.Subscriber("/command/pwm", PwmStamped, pwm_callback, queue_size=1)
@@ -80,11 +80,15 @@ def main():
                     statusList = packet.split("!")
                     stat_msg.header.stamp = rospy.Time.now()
                     stat_msg.temp_balancer = float(statusList[0].replace("\x00",""))
+                    print statusList[0]
+                    esPub.publish(stat_msg)
+                    """
                     stat_msg.temp_converter = float(statusList[1].replace("\x00",""))
                     stat_msg.stbd_voltage = float(statusList[2].replace("\x00",""))
                     stat_msg.stbd_current = float(statusList[3].replace("\x00",""))
                     stat_msg.port_voltage = float(statusList[4].replace("\x00",""))
                     stat_msg.port_current = float(statusList[5].replace("\x00",""))
+                    """
 
         rate.sleep()
 

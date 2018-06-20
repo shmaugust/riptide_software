@@ -26,12 +26,12 @@ add_message_files(
     ControlStatus.msg
     ControlStatusAngular.msg
     ControlStatusLinear.msg
-<<<<<<< HEAD
+
     AlignmentCommand.msg
     DepthCommand.msg
-=======
+
     ElectroStat.msg
->>>>>>> ocean
+
 )
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)

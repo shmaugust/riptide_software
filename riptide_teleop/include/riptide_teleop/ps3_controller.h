@@ -11,6 +11,7 @@
 #include "riptide_msgs/DepthCommand.h"
 #include "riptide_msgs/Depth.h"
 #include "riptide_msgs/ResetControls.h"
+using namespace std;
 
 class PS3Controller
 {
@@ -23,15 +24,16 @@ class PS3Controller
   riptide_msgs::DepthCommand cmd_depth;
   riptide_msgs::ResetControls reset_msg;
   bool isReset, isStarted, isInit, isDepthWorking, isR2Init, isL2Init;
+  bool isDepthInit;
   tf::Vector3 euler_rpy;
   double rt, current_depth, buoyancy_depth_thresh, delta_depth;
 
-  // Max values, and command ates
+  // Max values, and command rates
   double MAX_ROLL, MAX_PITCH, MAX_DEPTH, MAX_XY_ACCEL, MAX_Z_ACCEL;
   double CMD_ROLL_RATE, CMD_PITCH_RATE, CMD_YAW_RATE, CMD_DEPTH_RATE;
 
   // Multiplication Factors (based on command rates)
-  double roll_factor, pitch_factor, yaw_factor, depth_factor;
+  double roll_factor, pitch_factor, yaw_factor, depth_factor, boost;
 
   void InitMsgs();
   double Constrain(double current, double max);
@@ -42,7 +44,8 @@ class PS3Controller
 
  public:
   PS3Controller();
-  void LoadProperty(std::string name, double &param);
+  template <typename T>
+  void LoadParam(string param, T &var);
   void DepthCB(const riptide_msgs::Depth::ConstPtr &depth_msg);
   void ImuCB(const riptide_msgs::Imu::ConstPtr& imu_msg);
   void JoyCB(const sensor_msgs::Joy::ConstPtr& joy);

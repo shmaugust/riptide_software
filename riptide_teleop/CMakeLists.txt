@@ -8,14 +8,15 @@ find_package(catkin REQUIRED
     roscpp
     roslint
     tf
+    sensor_msgs
+    cv_bridge
 )
 
-catkin_package()
-
+catkin_package(INCLUDE_DIRS include)
+find_package(OpenCV REQUIRED) # To include, OpenCV, this MUST go BEFORE include_directories()
+include_directories(include ${catkin_INCLUDE_DIRS} $(OpenCV_INCLUDE_DIRS))
 roslint_cpp()
 
-include_directories(include ${catkin_INCLUDE_DIRS})
-
-add_executable(ps3_control src/ps3_control.cpp)
-target_link_libraries(ps3_control ${catkin_LIBRARIES})
-add_dependencies(ps3_control ${catkin_EXPORTED_TARGETS})
+add_executable(ps3_controller src/ps3_controller.cpp)
+target_link_libraries(ps3_controller ${catkin_LIBRARIES})
+add_dependencies(ps3_controller ${catkin_EXPORTED_TARGETS})
